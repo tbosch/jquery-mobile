@@ -94,7 +94,7 @@ function testHashMakesHistory(){
 		win.location.hash = prevHash;
 	}
 	
-	return historyMade;
+	$.support.hashMakesHistory = makesHistory;
 };
 
 $.extend( $.support, {
@@ -113,9 +113,5 @@ fakeBody.remove();
 
 //for ruling out shadows via css
 if( !$.support.boxShadow ){ $('html').addClass('ui-mobile-nosupport-boxshadow'); }
-
-$(function(){
-	$.support.hashMakesHistory = testHashMakesHistory();
-});
 
 })( jQuery );
