@@ -46,6 +46,57 @@ function baseTagTest(){
 	return rebase.indexOf(fauxBase) === 0;
 };
 
+//support test for whether a hash change makes a history entry
+//not called until the page navigation needs to make sure ajax usage is safe
+function testHashMakesHistory(){
+	var win = window,
+		count = 0,
+		addItem = function(){
+			win.location.hash += "*";
+		},
+		prevHash,
+		histLength,
+		historyMade;
+	
+	//set prevHash to current hash
+	prevHash = win.location.hash;
+
+	//disable hash listening	
+	$.mobile.urlHistory.listeningEnabled = false;	
+	
+	//bind to resulting hashchange, set back again after 2 changes
+	$( win ).bind("hashchange.hashMakesHistory",function(){
+		count++;
+		if( count == 2 ){
+			$.mobile.urlHistory.listeningEnabled = true;
+			$( win ).unbind("hashchange.hashMakesHistory");	
+		}	
+	});		
+	
+	//change hash, clears forward "history"		
+	addItem();
+	
+	//get hist length
+	histLength = win.history.length;
+	
+	//add another item for comparison
+	addItem();
+	
+	//define support bool
+	historyMade = histLength < win.history.length;
+	
+	//if it made a history entry, we can go back one to remove the faux entry
+	if( historyMade ){
+		history.go( -2 );
+	}
+	//otherwise, just put things where they were before because it doesn't matter
+	else{
+		win.location.hash = prevHash;
+	}
+	
+	return historyMade;
+};
+
 $.extend( $.support, {
 	orientation: "orientation" in window,
 	touch: "ontouchend" in document,
@@ -62,5 +113,9 @@ fakeBody.remove();
 
 //for ruling out shadows via css
 if( !$.support.boxShadow ){ $('html').addClass('ui-mobile-nosupport-boxshadow'); }
+
+$(function(){
+	$.support.hashMakesHistory = testHashMakesHistory();
+});
 
 })( jQuery );

@@ -524,7 +524,7 @@
 
 	//bind to form submit events, handle with Ajax
 	$( "form[data-ajax!='false']" ).live('submit', function(event){
-		if( !$.mobile.ajaxEnabled ||
+		if( !$.mobile.ajaxEnabled || !$.support.hashMakesHistory ||
 			//TODO: deprecated - remove at 1.0
 			!$.mobile.ajaxFormsEnabled ){ return; }
 
@@ -575,7 +575,7 @@
 
 		$activeClickedLink = $this.closest( ".ui-btn" ).addClass( $.mobile.activeBtnClass );
 
-		if( isExternal || hasTarget || !$.mobile.ajaxEnabled ||
+		if( isExternal || hasTarget || !$.mobile.ajaxEnabled || !$.support.hashMakesHistory ||
 			// TODO: deprecated - remove at 1.0
 			!$.mobile.ajaxLinksEnabled ){
 			//remove active link class if external (then it won't be there if you come back)
