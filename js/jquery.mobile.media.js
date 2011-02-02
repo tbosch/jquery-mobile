@@ -111,8 +111,6 @@ $(document).bind("mobileinit.htmlclass", function(){
 			} else {
 			    $( '.ui-page' ).css( 'minHeight', ( screen.availHeight <= screen.availWidth ) ? screen.availHeight : screen.availWidth);
 			}
-            
-            $.mobile.silentScroll();
 		}
 		//add classes to HTML element for min/max breakpoints
 		detectResolutionBreakpoints();

@@ -345,8 +345,6 @@
 
 		//function for transitioning between two existing pages
 		function transitionPages() {
-		    $.mobile.silentScroll();
-
 			//get current scroll distance
 			var currScroll = $window.scrollTop(),
 					perspectiveTransitions = [ "flip" ],
@@ -380,11 +378,6 @@
 				}
 
 				removeActiveLinkClass();
-
-				//jump to top or prev scroll, sometimes on iOS the page has not rendered yet.  I could only get by this with a setTimeout, but would like to avoid that.
-				$.mobile.silentScroll( to.data( "lastScroll" ) ); 
-
-				reFocus( to );
 
 				//trigger show/hide events
 				if( from ){
@@ -423,7 +416,7 @@
 				pageContainerClasses = [];
 			};
 
-
+		    $.mobile.scrollTo(0, 0);
 
 			if(transition && (transition !== 'none')){
 			    $.mobile.pageLoading( true );
@@ -446,7 +439,31 @@
 						from.removeClass( $.mobile.activePageClass );
 					}	
 					loadComplete();
+
+					// The ordering of the operations below is important for the following reasons:
+					//
+					//   - The classes that are set on the viewport during a transition causes
+					//     ui-page elements to have a height that exactly matches the viewport
+					//     height. When removeContainerClasses() is called, these classes are removed,
+					//     but the reflow necessary to calculate the new document height may not have
+					//     happened yet. This means we need to delay the code that sets any previous
+					//     scroll offset for some time so that the browser can calculate the height,
+					//     allowing us to scroll to the proper offset.
+					//
+					//	- We need to set the focus *AFTER* the classes have been removed so that we
+					//    don't trigger the browser's auto-offset-rendering which kicks in for overflow:hidden
+					//    elements. We also need to make sure we set it *BEFORE* we scroll so that it doesn't
+					//    cause the browser to scroll the focused element into view after we've set our desired
+					//    scroll position.
+					//
+					// - Finally, we set the scroll position *AFTER* the classes are unset and focus has
+					//   been set.
 					removeContainerClasses();
+					reFocus( to );
+					setTimeout(function(){
+						reFocus( to );
+						$.mobile.scrollTo( 0, to.data( "lastScroll" ) ); 
+					}, 10);
 				});
 			}
 			else{
@@ -456,6 +473,12 @@
 				}	
 				to.addClass( $.mobile.activePageClass );
 				loadComplete();
+
+				// The order of the code below matters. We need make sure we focus first,
+				// and then scroll to our desired offset since some browsers will auto scroll
+				// whatever gets focused programatically into view.
+				reFocus( to );
+				$.mobile.scrollTo( 0, to.data( "lastScroll" ) ); 
 			}
 		};
 
@@ -557,7 +580,7 @@
 						.appendTo( $.mobile.pageContainer );
 
 					enhancePage();
-					setTimeout(function() { transitionPages() }, 0);
+					transitionPages();
 				},
 				error: function() {
 					$.mobile.pageLoading( true );

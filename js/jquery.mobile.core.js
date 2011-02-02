@@ -134,6 +134,8 @@
 	$.mobile.metaViewportContent ? $( "<meta>", { name: "viewport", content: $.mobile.metaViewportContent}).prependTo( $head ) : undefined;
 
 
+	var silentScrollTimer = 0;
+
 	//expose some core utilities
 	$.extend($.mobile, {
 
@@ -158,20 +160,25 @@
 			}
 		},
 
+		scrollTo: function(x, y) {
+			if (silentScrollTimer)
+				clearTimeout(silentScrollTimer);
+			silentScrollTimer = 0;
+			window.scrollTo(x || 0, y || 0);
+		},
+	
 		//scroll page vertically: scroll to 0 to hide iOS address bar, or pass a Y value
 		silentScroll: function( ypos ) {
 			ypos = ypos || 0;
 			// prevent scrollstart and scrollstop events
 			$.event.special.scrollstart.enabled = false;
-
-			setTimeout(function() {
-				window.scrollTo( 0, ypos );
+			if (silentScrollTimer)
+				clearTimeout(silentScrollTimer);
+			silentScrollTimer = setTimeout(function() {
+				$.mobile.scrollTo( 0, ypos );
+				$.event.special.scrollstart.enabled = true;
 				$(document).trigger( "silentscroll", { x: 0, y: ypos });
 			},20);
-
-			setTimeout(function() {
-				$.event.special.scrollstart.enabled = true;
-			}, 150 );
 		},
 
 		// find and enhance the pages in the dom and transition to the first page.
@@ -212,6 +219,6 @@
 
 	//window load event
 	//hide iOS browser chrome on load
-	$window.load( $.mobile.silentScroll );
+	$window.load( function(){$.mobile.silentScroll();} );
 
 })( jQuery, this );
