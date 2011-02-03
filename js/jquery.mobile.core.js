@@ -43,6 +43,9 @@
 
 		//set default transition - 'none' for no transitions
 		defaultTransition: "slide",
+		
+		//set smooth scrolling when returning to a scroll location
+		smoothScroll: true,
 
 		//show loading message during Ajax requests
 		//if false, message will not appear, but loading classes will still be toggled on html el

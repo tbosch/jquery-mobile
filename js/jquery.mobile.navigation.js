@@ -345,7 +345,6 @@
 
 		//function for transitioning between two existing pages
 		function transitionPages() {
-		    $.mobile.silentScroll();
 
 			//get current scroll distance
 			var currScroll = $window.scrollTop(),
@@ -381,11 +380,19 @@
 
 				removeActiveLinkClass();
 
-				//jump to top or prev scroll, sometimes on iOS the page has not rendered yet.  I could only get by this with a setTimeout, but would like to avoid that.
-				$.mobile.silentScroll( to.data( "lastScroll" ) ); 
-
+				//if there's a scrollTop from visiting the page already, scroll to it 
+				var lastScroll = to.data( "lastScroll" ) || 0,
+					scrollObj = "scrollTop" in document.body && "body" || "scrollTop" in document.documentElement && "html";
+				
+				if( scrollObj && lastScroll && $.mobile.smoothScroll ){
+					$( scrollObj ).animate( { scrollTop : lastScroll }, 500 );
+				}
+				else{
+					$.mobile.silentScroll( lastScroll );
+				}	
+				
 				reFocus( to );
-
+				
 				//trigger show/hide events
 				if( from ){
 					from.data( "page" )._trigger( "hide", null, { nextPage: to } );
