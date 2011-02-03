@@ -397,16 +397,17 @@
 
 				removeContainerClasses();	
 				
-				$.mobile.pageContainer.addClass("ui-mobile-viewport-scrolling");
+				
 
 				//reset page offsets and scrolltop
-				$(".ui-page-scrollhelper", to).removeAttr("style");
-
-				reFocus( to );
 				setTimeout(function(){
+					$.mobile.pageContainer.addClass("ui-mobile-viewport-scrolling");
+					$(".ui-page-scrollhelper", to).removeAttr("style");
 					window.scrollTo(0, toScroll);
 					$.mobile.pageContainer.removeClass("ui-mobile-viewport-scrolling");
-				}, 5);	
+				},10);	
+				
+				reFocus( to );
 
 				//trigger show/hide events
 				if( from ){
