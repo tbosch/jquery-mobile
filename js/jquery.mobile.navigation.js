@@ -411,7 +411,6 @@
 						toHelper.css("-webkit-transform", "");
 						window.scrollTo(0,toScroll);
 						$.mobile.pageContainer.removeClass("ui-mobile-viewport-scrolling");
-						e.preventDefault();
 					});
 				}
 
