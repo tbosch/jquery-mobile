@@ -347,12 +347,15 @@
 
 		//function for transitioning between two existing pages
 		function transitionPages() {
+		    
 
 			//get current scroll distance
 			var currScroll = $window.scrollTop(),
 				toScroll = to.data( "lastScroll" ) || 0,
 				perspectiveTransitions = [ "flip" ],
-				pageContainerClasses = [];
+				pageContainerClasses = [],
+				toHelper = $(".ui-page-scrollhelper", to),
+				fromHelper = from && $(".ui-page-scrollhelper", from);
 				
 			
 
@@ -363,7 +366,7 @@
 			
 			if( from ){
 				//set translate to current scroll
-				$(".ui-page-scrollhelper", from).css("-webkit-transform","translateY(-"+ currScroll +"px)");
+				fromHelper.css("-webkit-transform","translateY(-"+ currScroll +"px)");
 			
 				//set as data for returning to that spot
 				from.data( "lastScroll", currScroll);
@@ -374,7 +377,8 @@
 			to.data( "page" )._trigger( "beforeshow", { prevPage: from || $("") } );
 			
 			//set translate to current scroll
-			$(".ui-page-scrollhelper", to).css("-webkit-transform","translateY(-"+ toScroll +"px)");
+			
+			toHelper.css("-webkit-transform","translateY(-"+ toScroll +"px)");
 			
 			window.scrollTo(0,0);
 			
@@ -395,19 +399,21 @@
 
 				removeActiveLinkClass();
 
-				removeContainerClasses();	
-				
-				
-
-				//reset page offsets and scrolltop
-				setTimeout(function(){
-					$.mobile.pageContainer.addClass("ui-mobile-viewport-scrolling");
-					$(".ui-page-scrollhelper", to).removeAttr("style");
-					window.scrollTo(0, toScroll);
-					$.mobile.pageContainer.removeClass("ui-mobile-viewport-scrolling");
-				},10);	
-				
+				removeContainerClasses();
+					
 				reFocus( to );
+				
+				to.unbind(".transition");
+				
+				if(toScroll){
+					to.one("touchstart.transition orientationchange.transition resize.transition scroll.transition mousedown.transition", function(e){
+						$.mobile.pageContainer.addClass("ui-mobile-viewport-scrolling");
+						toHelper.css("-webkit-transform", "");
+						window.scrollTo(0,toScroll);
+						$.mobile.pageContainer.removeClass("ui-mobile-viewport-scrolling");
+						e.preventDefault();
+					});
+				}
 
 				//trigger show/hide events
 				if( from ){

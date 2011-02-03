@@ -166,6 +166,7 @@ Built by David Kaneda and maintained by Jonathan Stark.
 .ui-mobile-viewport-scrolling,
 .ui-mobile-viewport-scrolling .ui-page {
 	-webkit-backface-visibility: hidden;
+	overflow: hidden;
 }
 
 .flip {
