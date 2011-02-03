@@ -345,11 +345,12 @@
 
 		//function for transitioning between two existing pages
 		function transitionPages() {
-
 			//get current scroll distance
 			var currScroll = $window.scrollTop(),
 					perspectiveTransitions = [ "flip" ],
 					pageContainerClasses = [];
+				
+			window.scrollTo(0,0);		
 
 			//support deep-links to generated sub-pages
 			if( url.indexOf( "&" + $.mobile.subPageUrlKey ) > -1 ){
@@ -382,13 +383,19 @@
 
 				//if there's a scrollTop from visiting the page already, scroll to it 
 				var lastScroll = to.data( "lastScroll" ) || 0,
-					scrollObj = "scrollTop" in document.body && "body" || "scrollTop" in document.documentElement && "html";
+					scrollObj = "scrollTop" in document.body && "body" || "scrollTop" in document.documentElement && "html",
+					scrollClass = "ui-mobile-viewport-scrolling";
+				
+				addContainerClass( scrollClass );
 				
 				if( scrollObj && lastScroll && $.mobile.smoothScroll ){
-					$( scrollObj ).animate( { scrollTop : lastScroll }, 500 );
+					$( scrollObj ).animate( { scrollTop : lastScroll }, 800, function(){
+						$.mobile.pageContainer.removeClass( scrollClass );
+					} );
 				}
 				else{
-					$.mobile.silentScroll( lastScroll );
+					window.scrollTo(0, lastScroll);
+					$.mobile.pageContainer.removeClass( scrollClass );
 				}	
 				
 				reFocus( to );
