@@ -38,6 +38,8 @@ $.widget( "mobile.page", $.mobile.widget, {
 			return;
 		}
 		
+		$elem.wrapInner("<div class='ui-page-scrollhelper'></div>");
+		
 		if( $( "html" ).hasClass( 'portrait' ) ) {
 		    $elem.css( 'minHeight', ( screen.availHeight >= screen.availWidth ) ? screen.availHeight : screen.availWidth);
 		} else {

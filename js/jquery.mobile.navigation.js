@@ -342,15 +342,19 @@
 				transition = $.mobile.defaultTransition;
 			}
 		}
+		
+		
 
 		//function for transitioning between two existing pages
 		function transitionPages() {
-		    $.mobile.silentScroll();
 
 			//get current scroll distance
 			var currScroll = $window.scrollTop(),
-					perspectiveTransitions = [ "flip" ],
-					pageContainerClasses = [];
+				toScroll = to.data( "lastScroll" ) || 0,
+				perspectiveTransitions = [ "flip" ],
+				pageContainerClasses = [];
+				
+			
 
 			//support deep-links to generated sub-pages
 			if( url.indexOf( "&" + $.mobile.subPageUrlKey ) > -1 ){
@@ -358,12 +362,22 @@
 			}
 			
 			if( from ){
+				//set translate to current scroll
+				$(".ui-page-scrollhelper", from).css("-webkit-transform","translateY(-"+ currScroll +"px)");
+			
 				//set as data for returning to that spot
 				from.data( "lastScroll", currScroll);
 				//trigger before show/hide events
 				from.data( "page" )._trigger( "beforehide", { nextPage: to } );
 			}	
+			
 			to.data( "page" )._trigger( "beforeshow", { prevPage: from || $("") } );
+			
+			//set translate to current scroll
+			$(".ui-page-scrollhelper", to).css("-webkit-transform","translateY(-"+ toScroll +"px)");
+			
+			window.scrollTo(0,0);
+			
 
 			function loadComplete(){
 
@@ -381,10 +395,18 @@
 
 				removeActiveLinkClass();
 
-				//jump to top or prev scroll, sometimes on iOS the page has not rendered yet.  I could only get by this with a setTimeout, but would like to avoid that.
-				$.mobile.silentScroll( to.data( "lastScroll" ) ); 
+				removeContainerClasses();	
+				
+				$.mobile.pageContainer.addClass("ui-mobile-viewport-scrolling");
+
+				//reset page offsets and scrolltop
+				$(".ui-page-scrollhelper", to).removeAttr("style");
 
 				reFocus( to );
+				setTimeout(function(){
+					window.scrollTo(0, toScroll);
+					$.mobile.pageContainer.removeClass("ui-mobile-viewport-scrolling");
+				}, 5);	
 
 				//trigger show/hide events
 				if( from ){
@@ -444,9 +466,8 @@
 					from.add( to ).removeClass("out in reverse " + transition );
 					if( from ){
 						from.removeClass( $.mobile.activePageClass );
-					}	
+					}
 					loadComplete();
-					removeContainerClasses();
 				});
 			}
 			else{
@@ -557,7 +578,7 @@
 						.appendTo( $.mobile.pageContainer );
 
 					enhancePage();
-					setTimeout(function() { transitionPages() }, 0);
+					transitionPages();
 				},
 				error: function() {
 					$.mobile.pageLoading( true );

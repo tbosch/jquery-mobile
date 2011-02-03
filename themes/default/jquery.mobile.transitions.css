@@ -163,6 +163,11 @@ Built by David Kaneda and maintained by Jonathan Stark.
 	overflow: hidden;
 }
 
+.ui-mobile-viewport-scrolling,
+.ui-mobile-viewport-scrolling .ui-page {
+	-webkit-backface-visibility: hidden;
+}
+
 .flip {
 	-webkit-animation-duration: .65s;
 	-webkit-backface-visibility:hidden;
