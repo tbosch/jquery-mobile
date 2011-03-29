@@ -9,6 +9,44 @@
 			location.hash = "";
 		}
 	});
+	
+	asyncTest( "Page title updates properly from title tag when loading an external page", function(){
+		$("#titletest1").click();
+		setTimeout(function(){
+			same(document.title, "Title Tag");
+			start();
+		},1000);
+	});
+	
+	asyncTest( "Page title updates properly when clicking back to previous page", function(){
+		window.history.back();
+		setTimeout(function(){
+			same(document.title, "jQuery Mobile Navigation Test Suite");
+			start();
+		},1500);
+	});
+	
+	asyncTest( "Page title updates properly from title element  when loading an external page", function(){
+		$("#titletest2").click();
+		setTimeout(function(){
+			same(document.title, "Title Tag");
+			start();
+		},1500);
+	});
+	
+	
+	asyncTest( "Page title updates properly from heading text in header when loading an external page", function(){
+		$("#titletest3").click();
+		setTimeout(function(){
+			same(document.title, "Title Heading"); 
+			start();
+		},1500);
+	});
+	
+
+	
+	
+	
 
 	test( "forms with data attribute ajax set to false will not call changePage", function(){
 		var called = false;
@@ -295,5 +333,12 @@
 				start();
 			}], 1000);
 	});
+	
+	
+	
+	
+	
+	
+	
 })(jQuery);
 

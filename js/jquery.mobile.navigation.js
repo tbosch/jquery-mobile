@@ -497,8 +497,9 @@
 			}
 			
 			//if title element wasn't found, try the page div data attr too
-			var newPageTitle = to.attr( ":jqmData(title)" );
-			if( newPageTitle ){
+			var newPageTitle = to.attr( ":jqmData(title)" ) || to.find(".ui-header .ui-title" ).text();
+			if( !!newPageTitle ){
+				
 				pageTitle = newPageTitle;
 			}
 
