@@ -400,6 +400,12 @@
 					//update hash and history
 					path.set( url );
 				}
+				
+				//if title element wasn't found, try the page div data attr too
+				var newPageTitle = to.attr( ":jqmData(title)" ) || to.find(".ui-header .ui-title" ).text();
+				if( newPageTitle && pageTitle == document.title ){
+					pageTitle = newPageTitle;
+				}
 
 				//add page to history stack if it's not back or forward
 				if( !back && !forward ){
@@ -494,13 +500,6 @@
 					to.attr( "data-" + $.mobile.ns + "role", nextPageRole );
 					nextPageRole = null;
 				}
-			}
-			
-			//if title element wasn't found, try the page div data attr too
-			var newPageTitle = to.attr( ":jqmData(title)" ) || to.find(".ui-header .ui-title" ).text();
-			if( !!newPageTitle ){
-				
-				pageTitle = newPageTitle;
 			}
 
 			//run page plugin
