@@ -47,6 +47,79 @@ function baseTagTest(){
 };
 
 
+
+//support test for whether a hash change makes a history entry
+//not called until the page navigation needs to make sure ajax usage is safe
+$.support.hashMakesHistory = function(){
+	var win = window,
+		count = 0,
+		addItem = function(){
+			win.location.hash += "*";
+		},
+		prevHash,
+		histLength,
+		historyMade;
+	
+	//set prevHash to current hash
+	prevHash = win.location.hash;
+
+	//disable hash listening	
+	$.mobile.urlHistory.listeningEnabled = false;	
+	
+	//bind to resulting hashchange, set back again after 2 changes
+	$( win ).bind("hashchange.hashMakesHistory",function(){
+		count++;
+		if( count == 2 ){
+			$.mobile.urlHistory.listeningEnabled = true;
+			$( win ).unbind("hashchange.hashMakesHistory");	
+		}	
+	});		
+	
+	//change hash, clears forward "history"		
+	addItem();
+	
+	//get hist length
+	histLength = win.history.length;
+	
+	//add another item for comparison
+	addItem();
+	
+	//define support bool
+	historyMade = histLength < win.history.length;
+	
+	//if it made a history entry, we can go back one to remove the faux entry
+	if( historyMade ){
+		history.go( -2 );
+	}
+	//otherwise, just put things where they were before because it doesn't matter
+	else{
+		win.location.hash = prevHash;
+	}
+	
+	$.support.hashMakesHistory = historyMade;
+};
+
+//if ajax is enabled, make sure it should be!
+$(window).load(function(){
+	if( $.mobile.ajaxEnabled ){
+		var lStrg = window.localStorage,
+			token = "jqmHashMakesHistory";
+			
+		if( lStrg && lStrg[token] ){
+			$.mobile.ajaxEnabled = $.support.hashMakesHistory = lStrg[token];
+		}
+		else {
+			$.mobile.ajaxEnabled = $.support.hashMakesHistory();
+			
+			if( lStrg ){
+				lStrg[token] = $.mobile.ajaxEnabled;
+			}
+		}	
+	}
+});
+
+
+
 //non-UA-based IE version check by James Padolsey, modified by jdalton - from http://gist.github.com/527683
 //allows for inclusion of IE 6+, including Windows Mobile 7
 $.mobile.browser = {};
