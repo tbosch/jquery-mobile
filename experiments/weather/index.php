@@ -33,7 +33,9 @@ $forecast_list = $xml->xpath("/xml_api_reply/weather/forecast_conditions");
 		.current img { float: left; margin: 5px 10px 0 0; }
 		.current p { font-weight: bold; font-size: 1.1em; margin-left: 20px; }
 		.ui-mobile label { position: absolute; left: -9999px; }
-		.ui-input-search, .min-width-480px .ui-input-search { margin: 5px auto; width: auto; float: none; display: block; }
+		@media all and (min-width: 480px){
+			.ui-input-search { margin: 5px auto; width: auto; float: none; display: block; }
+		}	
 	</style>
 	<script>
 		$('div').live('pagecreate',function(){
