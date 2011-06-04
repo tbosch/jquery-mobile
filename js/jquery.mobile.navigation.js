@@ -273,10 +273,26 @@
 			return $(this);
 		}
 	};
+	//transition complete callback
+	$.fn.transitionComplete = function( callback ) {
+		if( $.support.cssTransitions ) {
+			return $( this ).one( 'webkitTransitionEnd', callback );
+		}
+		else{
+			// defer execution for consistency between webkit/non webkit
+			setTimeout( callback, 0 );
+			return $( this );
+		}
+	};
 
+    // For android, we need to set a special style to the page container to prevent flickering
+    if ( $.mobile.browser.android) {
+        $('div').live('pagebeforeshow',function(event, ui){
+            $(this).parent().css('-webkit-transform', 'translate3d(0,0,0)');
+        });
+    }
 
-
-/* exposed $.mobile methods	 */
+    /* exposed $.mobile methods	 */
 
 	//update location.hash, with or without triggering hashchange event
 	//TODO - deprecate this one at 1.0
@@ -477,28 +493,62 @@
 			}
 
 			if(transition && (transition !== 'none')){
-			    $.mobile.pageLoading( true );
-				if( $.inArray(transition, perspectiveTransitions) >= 0 ){
-					addContainerClass('ui-mobile-viewport-perspective');
-				}
+                if ($.mobile.browser.android) {
+                    // For android use css transitions as page transition strategy
+                    $.mobile.pageLoading( true );
+                    if( $.inArray(transition, perspectiveTransitions) >= 0 ){
+                        addContainerClass('ui-mobile-viewport-perspective');
+                    }
+                    addContainerClass('ui-mobile-viewport-transitioning');
+                    var reverseClass = reverse ? " reverse" : "";
+                    if ( from ) {
+                        from.addClass( "transition2 "+transition + " out2" + reverseClass +" start");
+                    }
+                    to.addClass( $.mobile.activePageClass + " transition2 " + transition + " in2" + reverseClass +" start");
 
-				addContainerClass('ui-mobile-viewport-transitioning');
+                    // Set the end point of the transition some time later,
+                    // so that the transition is really executed!
+                    window.setTimeout(function() {
+                        if (from) {
+                            from.addClass('end');
+                        }
+                        to.addClass('end');
+                    },10);
+                    to.transitionComplete( function() {
+                        to.add( from ).removeClass( "transition out2 in2 reverse start end " + transition );
+                        if ( from ) {
+                            from.removeClass( $.mobile.activePageClass );
+                        }
+                        pageChangeComplete();
+                        removeContainerClasses();
+                    });
 
-				if( from ){
-					from.addClass( transition + " out " + ( reverse ? "reverse" : "" ) );
-				}
-				to.addClass( $.mobile.activePageClass + " " + transition +
-					" in " + ( reverse ? "reverse" : "" ) );
+                } else {
+                    // For all other browsers: Use css animations as page transition strategy.
 
-				// callback - remove classes, etc
-				to.animationComplete(function() {
-					to.add(from).removeClass("out in reverse " + transition );
-					if( from ){
-						from.removeClass( $.mobile.activePageClass );
-					}
-					pageChangeComplete();
-					removeContainerClasses();
-				});
+                    $.mobile.pageLoading( true );
+                    if( $.inArray(transition, perspectiveTransitions) >= 0 ){
+                        addContainerClass('ui-mobile-viewport-perspective');
+                    }
+
+                    addContainerClass('ui-mobile-viewport-transitioning');
+
+                    if( from ){
+                        from.addClass( transition + " out " + ( reverse ? "reverse" : "" ) );
+                    }
+                    to.addClass( $.mobile.activePageClass + " " + transition +
+                        " in " + ( reverse ? "reverse" : "" ) );
+
+                    // callback - remove classes, etc
+                    to.animationComplete(function() {
+                        to.add(from).removeClass("out in reverse " + transition );
+                        if( from ){
+                            from.removeClass( $.mobile.activePageClass );
+                        }
+                        pageChangeComplete();
+                        removeContainerClasses();
+                    });
+                }
 			}
 			else{
 			    $.mobile.pageLoading( true );
