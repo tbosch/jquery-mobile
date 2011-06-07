@@ -3,6 +3,7 @@
 *.diff
 *.patch
 .DS_Store
+.idea
 cache/
 combined/
 combine/
