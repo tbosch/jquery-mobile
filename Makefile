@@ -38,6 +38,7 @@ FILES = js/jquery.ui.widget.js \
 CSSFILES =  themes/default/jquery.mobile.theme.css \
   themes/default/jquery.mobile.core.css \
   themes/default/jquery.mobile.transitions.css \
+  themes/default/jquery.mobile.transitions2.css \
   themes/default/jquery.mobile.grids.css \
   themes/default/jquery.mobile.headerfooter.css \
   themes/default/jquery.mobile.navbar.css \
