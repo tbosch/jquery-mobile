@@ -103,14 +103,7 @@
 
 		//scroll page vertically: scroll to 0 to hide iOS address bar, or pass a Y value
 		silentScroll: function( ypos ) {
-            if (typeof ypos != 'number') {
-                // Sometimes this functions gets an argument which is no number at all...
-                ypos = 0;
-            }
-            if (ypos==0 && $.mobile.browser.android) {
-                // on Android we need ypos=1 to hide the addressbar
-                ypos = 1;
-            }
+			ypos = ypos || 0;
 			// prevent scrollstart and scrollstop events
 			$.event.special.scrollstart.enabled = false;
 
