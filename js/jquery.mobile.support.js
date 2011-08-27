@@ -69,7 +69,7 @@ $.mobile.browser.android = (function() {
 
 
 $.extend( $.support, {
-	orientation: "orientation" in window,
+	orientation: false,
 	touch: "ontouchend" in document,
 	cssTransitions: "WebKitTransitionEvent" in window,
 	pushState: !!history.pushState,
