@@ -116,12 +116,17 @@
 	//then check what the scroll top is. Android will report 0... others 1
 	//note that this initial scroll won't hide the address bar. It's just for the check.
 	$(function(){
+        /*
 		window.scrollTo( 0, 1 );
 
 		//if defaultHomeScroll hasn't been set yet, see if scrollTop is 1
 		//it should be 1 in most browsers, but android treats 1 as 0 (for hiding addr bar)
 		//so if it's 1, use 0 from now on
 		$.mobile.defaultHomeScroll = ( !$.support.scrollTop || $(window).scrollTop() === 1 ) ? 0 : 1;
+		*/
+        // Bugfix above does not work on android. So disable the special support for android
+        // (android needs defaultHomeScroll==1).
+        $.mobile.defaultHomeScroll = 0;
 	
 		//dom-ready inits
 		if( $.mobile.autoInitializePage ){
