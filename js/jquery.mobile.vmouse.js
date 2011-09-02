@@ -180,11 +180,23 @@ function triggerVirtualEvent( eventType, event, flags ) {
 	return defaultPrevented;
 }
 
+// Workaround for jquery issue 10192,
+// by which the mouseout event receives an event with type mosueleave
+// if at least one listener for mouseleave is registered.
+var jqueryEventTypeFixes = {
+   mouseenter: 'mouseover',
+   mouseleave: 'mouseout'
+};
+
 function mouseEventCallback( event ) {
 	var touchID = $.data(event.target, touchTargetPropertyName);
 
 	if ( !blockMouseTriggers && ( !lastTouchID || lastTouchID !== touchID ) ){
-		triggerVirtualEvent( "v" + event.type, event );
+        var newType = jqueryEventTypeFixes[event.type];
+        if (!newType) {
+            newType = event.type;
+        }
+		triggerVirtualEvent( "v" + newType, event );
 	}
 }
 
