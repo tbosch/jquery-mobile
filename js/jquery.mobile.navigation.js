@@ -602,8 +602,20 @@
 
 	//animation complete callback
 	$.fn.animationComplete = function( callback ) {
-		if( $.support.cssTransitions ) {
+        if( $.support.cssTransitions ) {
 			return $( this ).one( 'webkitAnimationEnd', callback );
+		}
+		else{
+			// defer execution for consistency between webkit/non webkit
+			setTimeout( callback, 0 );
+			return $( this );
+		}
+	};
+
+	//transition complete callback
+	$.fn.transitionComplete = function( callback ) {
+		if( $.support.cssTransitions ) {
+			return $( this ).one( "transitionend webkitTransitionEnd OTransitionEnd", callback );
 		}
 		else{
 			// defer execution for consistency between webkit/non webkit

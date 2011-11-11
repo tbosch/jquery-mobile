@@ -5,6 +5,7 @@
 	var perspective = "viewport-flip",
 			transitioning = "ui-mobile-viewport-transitioning",
 			animationCompleteFn = $.fn.animationComplete,
+            transitionCompleteFn = $.fn.transitionComplete,
 
 			//TODO centralize class names?
 			transitionTypes = "in out fade slide flip reverse pop",
@@ -23,7 +24,9 @@
 			callbackQueue = [],
 
 			finishPageTransition = function(){
-				callbackQueue.pop()();
+				var p = callbackQueue.pop();
+                console.log(p);
+                p();
 			},
 
 			clearPageTransitionStack = function(){
@@ -55,6 +58,9 @@
 			$.fn.animationComplete = function(callback){
 				callbackQueue.unshift(callback);
 			};
+            $.fn.transitionComplete = function(callback){
+				callbackQueue.unshift(callback);
+			};
 
 			clearPageTransitionStack();
 			clearUrlHistory();
@@ -63,6 +69,7 @@
 		teardown: function(){
 			// unmock animation complete
 			$.fn.animationComplete = animationCompleteFn;
+            $.fn.transitionComplete = transitionCompleteFn;
 		}
 	});
 

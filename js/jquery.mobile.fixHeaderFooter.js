@@ -272,9 +272,11 @@ $.mobile.fixedToolbars = (function() {
 				el.addClass( "ui-fixed-overlay" ).removeClass( "ui-fixed-inline" );
 
 				if ( !alreadyVisible && !immediately ) {
-					el.animationComplete(function() {
-						el.removeClass( "in" );
+					el.transitionComplete(function() {
+						el.removeClass( "in animate" );
 					}).addClass( "in" );
+					var force = document.body.scrollHeight;
+					el.addClass( "animate"  );
 				}
 				setTop(el);
 			});
@@ -309,7 +311,7 @@ $.mobile.fixedToolbars = (function() {
 
 							classes = "out reverse";
 
-							el.animationComplete(function() {
+							el.transitionComplete(function() {
 								el.removeClass( classes ).css( "top", 0 );
 							}).addClass( classes );
 						}
